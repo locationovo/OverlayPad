@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE*'
+      - '.gitignore'
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: overlay avatar
+        run: curl -fsSL "https://github.com/${{ github.repository_owner }}.png?size=512" -o avatar.png
+
+      - run: brew install ldid
+      - run: make sign
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OverlayPad.dylib
+          path: OverlayPad.dylib
